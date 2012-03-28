@@ -1,0 +1,10 @@
+This project is to automate the manual entry of the marks in colleges
+by providing user interfaces for the teachers so that they can upload the marks from the webpages.
+It will get stored in centralized database and will be visible for the admin who can use these details
+to go further.
+
+Authors 
+Vivek P
+vivek DOT purushoth AT gmail DOT com
+Mahesh K
+
