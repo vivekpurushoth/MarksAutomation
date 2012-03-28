@@ -1,0 +1,226 @@
+/** getDetails is a function which will get the information about the current teacher who is logged in and the subjects they handle
+ *  This function is called immediately after the teacher logs in from his/her system. This function decides the first page
+ *  that should appear on the browser after the teacher logs in by sending the obtained JSONObject to the function constructHomeUi
+**/
+
+function test() {
+	console.log("Coming inside test");
+	$('#myp').append("<p>hi maga whats up????</p>");
+	//document.getElementById('myp').innerHTML = '<p>hi maga</p>';
+	//console.log($('#myp').html);
+}
+function login() {
+	console.log("Coming to get Json Details function");
+	var params;
+	var a=document.getElementById('username').value;
+	var b=document.getElementById('password').value;
+	params = 'username='+a+'&password='+b;
+	console.log(params);
+	var xmlhttp;
+	if (window.XMLHttpRequest)
+	{
+		xmlhttp=new XMLHttpRequest();
+	}
+	else
+	{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function()
+	{
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			window.location = "http://localhost/CIE/home.html";
+			//count = count+1;
+			//console.log("Response is coming from the getDetails.php");
+			//var JSONObject = xmlhttp.responseText;
+			//temp = eval ("(" + JSONObject + ")");
+			//console.log(temp);
+			//console.log(count);
+			//console.log(temp["subject"][0]);
+			//window.location = "http://localhost/CIE/home.html?"+params;
+		}
+	}
+	xmlhttp.open("POST","http://localhost/CIE/php/login.php?",true);
+	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlhttp.send(params);
+}
+
+/**
+ * constructHomeUi() is a function which takes as input a valid evaluated JSON object
+ * and constructs the home page after the teacher has logged in. 
+ * This function is called from the function getDetails. No return values
+**/
+
+
+function getDetails(){
+	console.log("Coming from home page");
+	var temp;
+	var xmlhttp;
+	if (window.XMLHttpRequest)
+	{
+		xmlhttp=new XMLHttpRequest();
+	}
+	else
+	{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function()
+	{
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			console.log("Response is coming from the getDetails.php");
+			//console.log(xmlhttp.responseText);
+			var JSONObject = xmlhttp.responseText;
+			temp = eval ("(" + JSONObject + ")");
+			constructUi(temp);
+			//console.log(temp);
+		}
+	}
+	xmlhttp.open("POST","http://localhost/CIE/php/getdetails.php",true);
+	xmlhttp.send();
+	
+	//document.getElementById('main').innerHTML = '<div id="header"> <div id="logo"> <div id="logo_text"><h1><a href="index.html">CIE<span class="logo_colour">Marks</span></a></h1> <h2>Information Science Department Marks Automation</h2> <h2><b><i>Welcome '+name+'</i></b><h2> </div> </div> <div id="menubar"> <ul id="menu"> <li class="selected"><a>DataCommunications</a></li> <li><a>OOPS with C++</a></li> </ul> </div> </div> <div id="site_content"> <div id="content"> </div> </div> <div id="content_footer"></div> <div id="footer"> Copyright &copy; CIE | INFORMATION SCIENCE | PESIT </div>';
+}
+
+
+function constructUi(home)
+{
+	console.log(home);
+	//console.log(home["subject"][0]["name"]);
+	//console.log(home["subject"][0]);
+	//Getting the name of the teacher in the next variable
+	var name =  home["name"];
+	//Retrieving Each subject a teacher is handling
+	var subjects = "";
+	var tests = new Array();
+	for(var i = 0; i<home["subject"].length ; i++)
+	{
+		if(i==0) {
+			subjects += '<li class="selected" id="sub'+i+'li"><a id="sub'+i+'">'+home["subject"][i]["name"]+'</a></li>';
+		}
+		else
+		{
+			subjects += '<li class="headerMenu" id="sub'+i+'li"><a id="sub'+i+'">'+home["subject"][i]["name"]+'</a></li>';
+		}
+		if(home["subject"][i]["lab"]==0) {
+			tests[i] = '<li class="headerMenu" id="test1li"><a id="test1">Test1</a></li><li class="headerMenu" id="test2li"><a id="test2">Test2</a></li><li class="headerMenu" id="finalli"><a id="final">Final</a></li>';
+		}
+		else {
+			tests[i] = '<li class="headerMenu" id="test1li"><a id="test1">Test1</a></li><li class="headerMenu" id="test2li"><a id="test2">Test2</a></li><li class="headerMenu" id="labli"><a id="lab">Lab</a></li><li class="headerMenu" id="finalli"><a id="final">Final</a></li>';
+		}
+	}
+	//flag will be pointing to the subject currently being used
+	var flag =0;
+	//console.log(home["subject"][flag]["student"].length);
+	//console.log(home["subject"][0]["student"][0]["USN"]);
+	//To add the condition of Lab or Not
+	//Specifies for each test
+	//console.log(tests[0]);
+	//var tests = '<li class="headerMenu" id="test1li"><a id="test1">Test1</a></li><li class="headerMenu" id="test2li"><a id="test2">Test2</a></li><li class="headerMenu" id="labli"><a id="lab">Lab</a></li><li class="headerMenu" id="finalli"><a id="final">Final</a></li>';
+	var tableBody="";
+	var students = "";
+	$("#main").html('<div id="header"> <div id="logo"> <div id="logo_text"><h1><a href="index.html">CIE<span class="logo_colour">Marks</span></a></h1> <h2>Information Science Department Marks Automation</h2> <h2><b><i>Welcome '+name+'</i></b><h2> </div> </div> <div id="menubar"> <ul id="menu">'+subjects+'<li class="headerMenu"><a id="signoutLink" onClick="signout()">Sign Out</a></li></ul> </div> </div><div id="innerbody"><div id="menubar"> <ul id="menu">'+tests[0]+'</ul> </div> <div id="site_content"><form id="updateForm"> <table id="updateTable">'+tableBody+'</table> </form><div id="content">'+students+'</div> </div></div> <div id="content_footer"></div> <div id="footer"> Copyright &copy; CIE | INFORMATION SCIENCE | PESIT </div>');
+	test1();
+	function test1() {
+		tableBody = '<thead id="updateTableHead"> <th>USN</th> <th>T1 Score(Out Of 50)</th> <th>T1 Attendance(%)</th> <th>T1 Score(Out Of 20)</th> </thead><tbody id="updateTableBody">';
+		for(var i=0;i<home["subject"][0]["student"].length;i++) {
+			tableBody += '<tr> <td>'+home["subject"][0]["student"][i]["USN"]+'</td> <td><input type="text" name="text" value="'+home["subject"][0]["student"][i]["Test_1"]+'"/></td> <td><input type="text" name="text" value="'+home["subject"][0]["student"][i]["Attendance%_t1"]+'" /></td> <td>'+(home["subject"][0]["student"][i]["Test_1"]/2.5)+'</td></tr>';
+		}
+		tableBody += '</tbody>';
+		$('#updateTable').html(tableBody);
+		clearStyles();
+		$('#test1li').addClass("selected");
+	}
+	$('#sub0').click(function() {
+		console.log("Coming inside sub1");
+		//$("#main").html('<div id="header"> <div id="logo"> <div id="logo_text"><h1><a href="index.html">CIE<span class="logo_colour">Marks</span></a></h1> <h2>Information Science Department Marks Automation</h2> <h2><b><i>Welcome '+name+'</i></b><h2> </div> </div> <div id="menubar"> <ul id="menu">'+subjects+'<li class="headerMenu"><a id="signoutLink" onClick="signout()">Sign Out</a></li></ul> </div> </div><div id="menubar"> <ul id="menu">'+tests[0]+'</ul> </div> <div id="site_content"><form id="updateForm"> <table id="updateTable">'+tableBody+'</table> </form><div id="content">'+students+'</div> </div> <div id="content_footer"></div> <div id="footer"> Copyright &copy; CIE | INFORMATION SCIENCE | PESIT </div>');
+		$("innerBody").html('<div id="menubar"> <ul id="menu">'+tests[0]+'</ul> </div> <div id="site_content"><form id="updateForm"> <table id="updateTable">'+tableBody+'</table> </form><div id="content">'+students+'</div> </div>');
+		clearSubStyles();
+		$('#sub0li').addClass("selected");
+	});
+	$('#sub1').click(function() {
+		console.log("Coming inside sub2");
+		//$("#main").html('<div id="header"> <div id="logo"> <div id="logo_text"><h1><a href="index.html">CIE<span class="logo_colour">Marks</span></a></h1> <h2>Information Science Department Marks Automation</h2> <h2><b><i>Welcome '+name+'</i></b><h2> </div> </div> <div id="menubar"> <ul id="menu">'+subjects+'<li class="headerMenu"><a id="signoutLink" onClick="signout()">Sign Out</a></li></ul> </div> </div><div id="menubar"> <ul id="menu">'+tests[0]+'</ul> </div> <div id="site_content"><form id="updateForm"> <table id="updateTable">'+tableBody+'</table> </form><div id="content">'+students+'</div> </div> <div id="content_footer"></div> <div id="footer"> Copyright &copy; CIE | INFORMATION SCIENCE | PESIT </div>');
+		$("innerBody").html('<div id="menubar"> <ul id="menu">'+tests[0]+'</ul> </div> <div id="site_content"><form id="updateForm"> <table id="updateTable">'+tableBody+'</table> </form><div id="content">'+students+'</div> </div>');
+		clearSubStyles();
+		$('#sub1li').addClass("selected");
+	});
+	$('#test1').click(function() {
+		tableBody = '<thead id="updateTableHead"> <th>USN</th> <th>T1 Score(Out Of 50)</th> <th>T1 Attendance(%)</th> <th>T1 Score(Out Of 20)</th> </thead>';
+		for(var i=0;i<home["subject"][0]["student"].length;i++) {
+			tableBody += '<tbody id="updateTableBody"> <tr> <td>'+home["subject"][0]["student"][i]["USN"]+'</td> <td><input type="text" name="text" value="'+home["subject"][0]["student"][i]["Test_1"]+'"/></td> <td><input type="text" name="text" value="'+home["subject"][0]["student"][i]["Attendance%_t1"]+'" /></td> <td>'+(home["subject"][0]["student"][i]["Test_1"]/2.5)+'</td></tr></tbody>';
+		}
+		$('#updateTable').html(tableBody);
+		clearStyles();
+		$('#test1li').addClass("selected");
+	});
+	$('#test2').click(function() {
+		tableBody = '<thead id="updateTableHead"> <th>USN</th> <th>T2 Score(Out Of 50)</th> <th>T2 Attendance(%)</th> <th>T2 Score(Out Of 20)</th> </thead>';
+		for(var i=0;i<home["subject"][0]["student"].length;i++) {
+						tableBody += '<tbody id="updateTableBody"> <tr> <td>'+home["subject"][0]["student"][i]["USN"]+'</td> <td><input type="text" name="text" value="'+home["subject"][0]["student"][i]["Test_2"]+'"/></td> <td><input type="text" name="text" value="'+home["subject"][0]["student"][i]["Attendance%_t2"]+'"/></td> <td>'+(home["subject"][0]["student"][i]["Test_2"]/2.5)+'</td> </tr></tbody>';
+		}
+		$('#updateTable').html(tableBody);
+		clearStyles();
+		$('#test2li').addClass("selected");
+	});
+	$('#lab').click(function() {
+		tableBody = '<thead id="updateTableHead"><th>USN</th><th>Lab Internal</th><th>Lab Internal Total</th><th>Total</th> </thead>';
+		for(var i=0;i<home["subject"][0]["student"].length;i++) {
+						tableBody += '<tbody id="updateTableBody"> <tr> <td>'+home["subject"][0]["student"][i]["USN"]+'</td> <td><input type="text" name="text" value="'+home["subject"][0]["student"][i]["Lab_Internal"]+'"/></td> <td><input type="text" name="text" value="'+home["subject"][0]["student"][i]["Lab_attendance"]+'"/></td> <td>'+(home["subject"][0]["student"][i]["Lab_Internal_total"])+'</td> </tr></tbody>';
+		}
+		$('#updateTable').html(tableBody);
+		clearStyles();
+		$('#labli').addClass("selected");
+	});
+	$('#final').click(function() {
+		tableBody = '<thead id="updateTableHead"><th>USN</th><th>Test - 1</th><th>Test - 2</th><th>Lab</th><th>TOTAL</th></thead>';
+		for(var i=0;i<home["subject"][0]["student"].length;i++) {
+						tableBody += '<tbody id="updateTableBody"> <tr> <td>'+home["subject"][0]["student"][i]["USN"]+'</td> <td>'+home["subject"][0]["student"][i]["Lab_Internal"]+'</td> <td>'+home["subject"][0]["student"][i]["Lab_attendance"]+'</td> <td>'+(home["subject"][0]["student"][i]["Lab_Internal_total"])+'</td> </tr></tbody>';
+		}
+		$('#updateTable').html(tableBody);
+		clearStyles();
+		$('#finalli').addClass("selected");
+	});
+	function clearSubStyles(){
+		$('#sub0li').removeClass("selected");
+		$('#sub1li').removeClass("selected");
+		//$('#sub3li').removeClass("selected");
+	}
+	function clearStyles() {
+		$('#test1li').removeClass("selected");
+		$('#test2li').removeClass("selected");
+		$('#labli').removeClass("selected");
+		$('#finalli').removeClass("selected");
+	}
+	//document.getElementById('main').innerHTML = '<div id="header"> <div id="logo"> <div id="logo_text"><h1><a href="index.html">CIE<span class="logo_colour">Marks</span></a></h1> <h2>Information Science Department Marks Automation</h2> <h2><b><i>Welcome '+name+'</i></b><h2> </div> </div> <div id="menubar"> <ul id="menu">'+subjects+'<li class="headerMenu"><a id="signoutLink" onClick="signout()">Sign Out</a></li></ul> </div> </div><div id="menubar"> <ul id="menu">'+tests+'</ul> </div> <div id="site_content"><form id="updateForm"> <table id="updateTable">'+tableBody+'</table> </form><div id="content">'+students+'</div> </div> <div id="content_footer"></div> <div id="footer"> Copyright &copy; CIE | INFORMATION SCIENCE | PESIT </div>';
+	//document.getElementById('main').innerHTML = '<div id="header"> <div id="logo"> <div id="logo_text"><h1><a href="index.html">CIE<span class="logo_colour">Marks</span></a></h1> <h2>Information Science Department Marks Automation</h2> <h2><b><i>Welcome '+name+'</i></b><h2> </div> </div> <div id="menubar"> <ul id="menu">'+subjects+'<li class="headerMenu"><a id="signoutLink" onClick="signout()">Sign Out</a></li></ul> </div> </div><div id="menubar"> <ul id="menu">'+tests+'</ul> </div> <div id="site_content"><form id="updateForm"> <table id="updateTable"> <thead id="updateTableHead"> <th>USN</th> <th>T1 Score(Out Of 50)</th> <th>T1 Attendance(%)</th> <th>T1 Score(Out Of 20)</th> </thead> <tbody id="updateTableBody"> <tr> <td>1PI09IS119</td> <td><input type="text" name="text" /></td> <td><input type="text" name="text" /></td> <td>StaticMarks1</td> </tr> <tr> <td>1PI09IS111</td> <td><input type="text" name="text" /></td> <td><input type="text" name="text" /></td> <td>StaticMarks2</td> </tr> </tbody> </table> </form><div id="content">'+students+'</div> </div> <div id="content_footer"></div> <div id="footer"> Copyright &copy; CIE | INFORMATION SCIENCE | PESIT </div>';
+	//document.getElementById('main').innerHTML = '<div id="header"> <div id="logo"> <div id="logo_text"><h1><a href="index.html">CIE<span class="logo_colour">Marks</span></a></h1> <h2>Information Science Department Marks Automation</h2> <h2><b><i>Welcome '+name+'</i></b><h2> </div> </div> <div id="menubar"> <ul id="menu">'+subjects+'</ul> </div> </div><div id="menubar"> <ul id="menu">'+tests+'</ul> </div> <div id="site_content"><input type="text" placeholder="marks" /><input type="text" placeholder="marks" /><input type="text" placeholder="marks" /><input type="text" placeholder="marks" /><br /><input type="text" placeholder="marks" /><input type="text" placeholder="marks" /><input type="text" placeholder="marks" /><input type="text" placeholder="marks" /><div id="content">'+students+'</div> </div> <div id="content_footer"></div> <div id="footer"> Copyright &copy; CIE | INFORMATION SCIENCE | PESIT </div>';
+	//document.getElementById('main').innerHTML = '<div id="header"> <div id="logo"> <div id="logo_text"><h1><a href="index.html">CIE<span class="logo_colour">Marks</span></a></h1> <h2>Information Science Department Marks Automation</h2> <h2><b><i>Welcome '+name+'</i></b><h2> </div> </div> <div id="menubar"> <ul id="menu"> <li class="selected"><a>DataCommunications</a></li> <li><a>OOPS with C++</a></li> </ul> </div> </div> <div id="site_content"> <div id="content"> </div> </div> <div id="content_footer"></div> <div id="footer"> Copyright &copy; CIE | INFORMATION SCIENCE | PESIT </div>';
+}
+
+
+function signout() {
+	window.location="http://localhost/CIE/php/signout.php";
+}
+/**
+ *This function is taken from the net
+ *This function extracts url parameters and gives you the value to the key you send as a argument for this function.
+ */
+/*function getURLParam(strParamName){
+	var strReturn = "";
+	var strHref = window.location.href;
+	if ( strHref.indexOf("?") > -1 ){
+	var strQueryString = strHref.substr(strHref.indexOf("?"));
+	var aQueryString = strQueryString.split("&");
+	for ( var iParam = 0; iParam < aQueryString.length; iParam++ ){
+	if (
+	aQueryString[iParam].indexOf(strParamName + "=") > -1 ){
+	var aParam = aQueryString[iParam].split("=");
+	strReturn = aParam[1];
+	break;
+	}
+	}
+	}
+	return unescape(strReturn);
+}
+*/

@@ -1,0 +1,38 @@
+.headerMenu {
+	cursor:pointer;
+}
+
+#updateTable {
+	position : relative;
+	left : 50px;
+}
+#updateTable th,td{
+	padding:10px;
+	margin:10px;
+	width: 130px;
+	text-align:center;
+}
+
+#saveButton
+{
+	position : relative;
+	top: 10px;
+	left : 300px;
+	background-color: #5a7003;
+	border: 0px;
+	padding: 6px;
+	padding-left: 15px;
+	padding-right: 15px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	color: #ffffff;
+	font-size: 25px;
+	font-family: ubuntu;
+	font-weight: normal;
+	cursor:pointer;
+}
+
+#saveButton:hover
+{
+  background-color: #334700;
+}
